@@ -12,6 +12,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const { logger, runAsSystem } = require('@librechat/data-schemas');
 const {
   isEnabled,
+  cpuProfiler,
   apiNotFound,
   ErrorController,
   memoryDiagnostics,
@@ -245,6 +246,16 @@ const startServer = async () => {
       const inspectFlags = process.execArgv.some((arg) => arg.startsWith('--inspect'));
       if (inspectFlags || isEnabled(process.env.MEM_DIAG)) {
         memoryDiagnostics.start();
+      }
+
+      if (isEnabled(process.env.CPU_PROFILE_ON_LAG)) {
+        cpuProfiler.start({
+          thresholdMs: Number(process.env.CPU_PROFILE_THRESHOLD_MS) || undefined,
+          profileDurationMs: Number(process.env.CPU_PROFILE_DURATION_MS) || undefined,
+          cooldownMs: Number(process.env.CPU_PROFILE_COOLDOWN_MS) || undefined,
+          outputDir: process.env.CPU_PROFILE_OUTPUT_DIR || undefined,
+          maxProfiles: Number(process.env.CPU_PROFILE_MAX_PROFILES) || undefined,
+        });
       }
     } catch (initErr) {
       logger.error('Post-listen initialization failed:', initErr);

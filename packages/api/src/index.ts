@@ -53,6 +53,7 @@ export * from './cache';
 export * from './stream';
 /* Diagnostics */
 export { memoryDiagnostics } from './utils/memory';
+export { cpuProfiler } from './utils/profiler';
 /* types */
 export type * from './mcp/types';
 export type * from './flow/types';
